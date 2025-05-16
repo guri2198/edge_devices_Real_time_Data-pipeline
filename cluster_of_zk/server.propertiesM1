@@ -1,0 +1,18 @@
+# Kafka Broker 1 Configuration
+broker.id=0
+listeners=PLAINTEXT://10.1.56.46:9092
+advertised.listeners=PLAINTEXT://10.1.56.46:9092
+log.dirs=/home/user/NasStorage/BROKER_SERVER_LOGS/broker-0-logs
+zookeeper.connect=10.1.57.192:2181,10.1.56.46:2181,10.1.57.15:2181
+num.network.threads=3
+num.io.threads=8
+socket.send.buffer.bytes=102400
+socket.receive.buffer.bytes=102400
+socket.request.max.bytes=104857600
+log.retention.hours=168
+log.segment.bytes=1073741824
+log.retention.check.interval.ms=300000
+zookeeper.connection.timeout.ms=18000
+
+
+
