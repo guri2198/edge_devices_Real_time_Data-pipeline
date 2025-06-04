@@ -4,6 +4,7 @@ A collection of Python-based Kafka consumers for processing real-time video stre
 
 ## System Architecture
 
+```mermaid
 flowchart TD
     A[Kafka Cluster<br/>10.1.56.46:9092,9093,9094] --> B[Topic: LabTappoCam1]
     A --> C[Topic: FrontGATE1]
@@ -23,6 +24,7 @@ flowchart TD
     F --> M[JSON + Base64 Data]
     M --> N[JSON Parse + Base64 Decode]
     N --> O[Single AVI Video<br/>/KafkaSSD/data/FrontGATE1.avi]
+```
 
 ## Prerequisites
 
