@@ -3,8 +3,26 @@
 A collection of Python-based Kafka consumers for processing real-time video streams. This repository contains three distinct consumer implementations, each designed for specific video data processing and storage requirements.
 
 ## System Architecture
-![image](https://drive.google.com/file/d/1e7BcIgpZ_dp0Ju5nuaC9A67-mmNxcOCH/view?usp=sharing)
-```
+
+flowchart TD
+    A[Kafka Cluster<br/>10.1.56.46:9092,9093,9094] --> B[Topic: LabTappoCam1]
+    A --> C[Topic: FrontGATE1]
+    
+    B --> D[JPEG Consumer<br/>jpg-Consumer-22fps.py]
+    B --> E[Dynamic AVI Consumer<br/>video-save-path-as-avi.py]
+    C --> F[AVI Consumer<br/>video-save-consumer-10fps-tested.py]
+    
+    D --> G[Binary Frame Data]
+    G --> H[OpenCV Decode]
+    H --> I[Individual JPEG Files<br/>/KafkaSSD/data/fps test data/labtappocam1]
+    
+    E --> J[Binary Frame Data]
+    J --> K[OpenCV Decode]
+    K --> L[Single AVI Video<br/>/media/user/Extreme SSD/DATAPIPELINE/DIXON-LAB-TAPPO-CAM]
+    
+    F --> M[JSON + Base64 Data]
+    M --> N[JSON Parse + Base64 Decode]
+    N --> O[Single AVI Video<br/>/KafkaSSD/data/FrontGATE1.avi]
 
 ## Prerequisites
 
