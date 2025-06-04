@@ -3,6 +3,7 @@
 A collection of Python-based Kafka consumers for processing real-time video streams. This repository contains three distinct consumer implementations, each designed for specific video data processing and storage requirements.
 
 ## System Architecture
+---
 
 ```mermaid
 flowchart TD
@@ -310,6 +311,31 @@ stateDiagram-v2
 | Dynamic AVI Consumer | LabTappoCam1 | Binary | Timestamped AVI | 20 FPS | `/media/user/Extreme SSD/DATAPIPELINE/DIXON-LAB-TAPPO-CAM` |
 
 ## Troubleshooting
+
+### Generalised System Health Monitoring Flow 
+
+```mermaid
+graph LR
+    A[Kafka Cluster Health] --> B[Consumer Lag Monitoring]
+    B --> C[Processing Rate Analysis]
+    C --> D[Storage I/O Monitoring]
+    D --> E[Error Rate Tracking]
+    E --> F[Resource Utilization]
+    F --> G[Alert Generation]
+    
+    subgraph Metrics
+        H[Frames/Second]
+        I[Queue Depth]
+        J[Disk Usage]
+        K[Memory Usage]
+    end
+    
+    C --> H
+    B --> I  
+    D --> J
+    F --> K
+```
+
 
 ### Common Issues
 
