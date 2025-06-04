@@ -3,7 +3,28 @@
 A collection of Python-based Kafka consumers for processing real-time video streams. This repository contains three distinct consumer implementations, each designed for specific video data processing and storage requirements.
 
 ## System Architecture
-![image](https://drive.google.com/file/d/1e7BcIgpZ_dp0Ju5nuaC9A67-mmNxcOCH/view?usp=sharing)
+---
+
+```mermaid
+flowchart TD
+    A[Kafka Cluster<br/>10.1.56.46:9092,9093,9094] --> B[Topic: LabTappoCam1]
+    A --> C[Topic: FrontGATE1]
+    
+    B --> D[JPEG Consumer<br/>jpg-Consumer-22fps.py]
+    B --> E[Dynamic AVI Consumer<br/>video-save-path-as-avi.py]
+    C --> F[AVI Consumer<br/>video-save-consumer-10fps-tested.py]
+    
+    D --> G[Binary Frame Data]
+    G --> H[OpenCV Decode]
+    H --> I[Individual JPEG Files<br/>/KafkaSSD/data/fps test data/labtappocam1]
+    
+    E --> J[Binary Frame Data]
+    J --> K[OpenCV Decode]
+    K --> L[Single AVI Video<br/>/media/user/Extreme SSD/DATAPIPELINE/DIXON-LAB-TAPPO-CAM]
+    
+    F --> M[JSON + Base64 Data]
+    M --> N[JSON Parse + Base64 Decode]
+    N --> O[Single AVI Video<br/>/KafkaSSD/data/FrontGATE1.avi]
 ```
 
 ## Prerequisites
@@ -16,6 +37,31 @@ A collection of Python-based Kafka consumers for processing real-time video stre
 ### Python Dependencies
 ```bash
 pip install kafka-python opencv-python numpy
+```
+### General Consumer Processing Flow 
+
+```mermaid
+sequenceDiagram
+    participant K as Kafka Broker
+    participant JC as JPEG Consumer
+    participant AC as AVI Consumer
+    participant DC as Dynamic AVI Consumer
+    participant FS as File System
+    
+    K->>JC: Binary Frame Data
+    JC->>JC: cv2.imdecode()
+    JC->>FS: Save JPEG file
+    
+    K->>AC: JSON + Base64 Data
+    AC->>AC: json.loads()
+    AC->>AC: base64.decode()
+    AC->>AC: cv2.imdecode()
+    AC->>FS: Write to AVI file
+    
+    K->>DC: Binary Frame Data
+    DC->>DC: cv2.imdecode()
+    DC->>DC: Initialize VideoWriter (first frame)
+    DC->>FS: Write to timestamped AVI
 ```
 
 ## Consumer Implementations
@@ -66,6 +112,23 @@ python jpg-Consumer-22fps.py
 - Logs errors with frame index information
 - Continues processing subsequent frames on individual failures
 
+### Error Flow diagram 
+
+```mermaid
+flowchart TD
+    A[Receive Kafka Message] --> B[Decode Binary Data]
+    B --> C{Frame Valid?}
+    C -->|Yes| D[Generate Filename]
+    C -->|No| E[Log Error]
+    E --> F[Continue to Next Frame]
+    D --> G[Save JPEG File]
+    G --> H{Save Successful?}
+    H -->|Yes| I[Log Success]
+    H -->|No| J[Log Error]
+    I --> F
+    J --> F
+    F --> A
+```
 ---
 
 ### 2. AVI Video Consumer (`video-save-consumer-10fps-tested.py`)
@@ -223,6 +286,22 @@ All consumers handle `SIGINT` (Ctrl+C) for graceful shutdown:
 - Releases video writer resources
 - Logs final statistics
 
+### Consumer Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Initializing
+    Initializing --> Connecting : Load Config
+    Connecting --> Consuming : Kafka Connection Established
+    Consuming --> Processing : Message Received
+    Processing --> Consuming : Frame Processed
+    Processing --> Error : Processing Failed
+    Error --> Consuming : Log Error & Continue
+    Consuming --> Shutdown : SIGINT Received
+    Shutdown --> Cleanup : Close Resources
+    Cleanup --> [*] : Exit
+```
+
 ## Technical Specifications
 
 | Consumer | Topic | Data Format | Output Format | Frame Rate | Storage Location |
@@ -232,6 +311,31 @@ All consumers handle `SIGINT` (Ctrl+C) for graceful shutdown:
 | Dynamic AVI Consumer | LabTappoCam1 | Binary | Timestamped AVI | 20 FPS | `/media/user/Extreme SSD/DATAPIPELINE/DIXON-LAB-TAPPO-CAM` |
 
 ## Troubleshooting
+
+### Generalised System Health Monitoring Flow 
+
+```mermaid
+graph LR
+    A[Kafka Cluster Health] --> B[Consumer Lag Monitoring]
+    B --> C[Processing Rate Analysis]
+    C --> D[Storage I/O Monitoring]
+    D --> E[Error Rate Tracking]
+    E --> F[Resource Utilization]
+    F --> G[Alert Generation]
+    
+    subgraph Metrics
+        H[Frames/Second]
+        I[Queue Depth]
+        J[Disk Usage]
+        K[Memory Usage]
+    end
+    
+    C --> H
+    B --> I  
+    D --> J
+    F --> K
+```
+
 
 ### Common Issues
 
