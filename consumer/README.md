@@ -37,7 +37,7 @@ flowchart TD
 ```bash
 pip install kafka-python opencv-python numpy
 ```
-###General Consumer Processing Flow 
+### General Consumer Processing Flow 
 
 ```mermaid
 sequenceDiagram
