@@ -37,6 +37,31 @@ flowchart TD
 ```bash
 pip install kafka-python opencv-python numpy
 ```
+###General Consumer Processing Flow 
+
+```mermaid
+sequenceDiagram
+    participant K as Kafka Broker
+    participant JC as JPEG Consumer
+    participant AC as AVI Consumer
+    participant DC as Dynamic AVI Consumer
+    participant FS as File System
+    
+    K->>JC: Binary Frame Data
+    JC->>JC: cv2.imdecode()
+    JC->>FS: Save JPEG file
+    
+    K->>AC: JSON + Base64 Data
+    AC->>AC: json.loads()
+    AC->>AC: base64.decode()
+    AC->>AC: cv2.imdecode()
+    AC->>FS: Write to AVI file
+    
+    K->>DC: Binary Frame Data
+    DC->>DC: cv2.imdecode()
+    DC->>DC: Initialize VideoWriter (first frame)
+    DC->>FS: Write to timestamped AVI
+```
 
 ## Consumer Implementations
 
@@ -86,6 +111,23 @@ python jpg-Consumer-22fps.py
 - Logs errors with frame index information
 - Continues processing subsequent frames on individual failures
 
+### Error Flow diagram 
+
+```mermaid
+flowchart TD
+    A[Receive Kafka Message] --> B[Decode Binary Data]
+    B --> C{Frame Valid?}
+    C -->|Yes| D[Generate Filename]
+    C -->|No| E[Log Error]
+    E --> F[Continue to Next Frame]
+    D --> G[Save JPEG File]
+    G --> H{Save Successful?}
+    H -->|Yes| I[Log Success]
+    H -->|No| J[Log Error]
+    I --> F
+    J --> F
+    F --> A
+```
 ---
 
 ### 2. AVI Video Consumer (`video-save-consumer-10fps-tested.py`)
@@ -242,6 +284,22 @@ All consumers handle `SIGINT` (Ctrl+C) for graceful shutdown:
 - Closes Kafka consumer connections
 - Releases video writer resources
 - Logs final statistics
+
+### Consumer Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Initializing
+    Initializing --> Connecting : Load Config
+    Connecting --> Consuming : Kafka Connection Established
+    Consuming --> Processing : Message Received
+    Processing --> Consuming : Frame Processed
+    Processing --> Error : Processing Failed
+    Error --> Consuming : Log Error & Continue
+    Consuming --> Shutdown : SIGINT Received
+    Shutdown --> Cleanup : Close Resources
+    Cleanup --> [*] : Exit
+```
 
 ## Technical Specifications
 
