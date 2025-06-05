@@ -1,0 +1,19 @@
+# Core Kafka and video processing dependencies
+kafka-python==2.0.2
+opencv-python==4.8.1.78
+termcolor==2.3.0
+
+# Additional useful dependencies for monitoring and configuration
+psutil==5.9.6
+pyyaml==6.0.1
+click==8.1.7
+requests==2.31.0
+numpy==1.24.4
+pillow==10.1.0
+
+# Development and testing
+pytest==7.4.3
+pytest-cov==4.1.0
+flake8==6.1.0
+black==23.11.0
+
