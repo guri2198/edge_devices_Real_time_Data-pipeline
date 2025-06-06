@@ -575,4 +575,4 @@ For detailed component information, refer to:
 **Last Updated**: June 2024  
 **Documentation Version**: 1.0  
 **License**: [Specify License]  
-**Maintainer**: Development Team
+**Maintainer**: Tejpreet Singh
