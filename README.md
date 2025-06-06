@@ -1,10 +1,14 @@
-# Edge Devices Real-time Data Pipeline
-
-![distributed-pipeline-architecture-07-jully(1)](https://github.com/user-attachments/assets/3b4928d0-1d7f-4ff6-a03b-d7503d635c22)
+# Real Time End-to-End Data Pipeline (Edge IoT)
 
 ## Project Overview
 
 The Edge Devices Real-time Data Pipeline is a distributed video streaming and processing system built on Apache Kafka architecture. This system captures video streams from edge devices (IP cameras), processes them in real-time, and distributes the data to multiple consumers for various processing and storage purposes.
+
+---
+
+![Overall system Architecture](https://github.com/user-attachments/assets/6ce76580-6f6d-44fb-b421-d327e224c70d)
+
+---
 
 ### Key Features
 
@@ -17,7 +21,7 @@ The Edge Devices Real-time Data Pipeline is a distributed video streaming and pr
 
 ---
 
-## System Architecture
+## Section Wise Architecture Distribution
 
 ```mermaid
 graph TB
